@@ -88,54 +88,54 @@ jobs:
           path: ./client/dist
           retention-days: 30
 
-  # Деплой клиента на Vercel (пример)
-  client-deploy-vercel:
-    runs-on: ubuntu-latest
-    needs: client-build
-    if: github.ref == 'refs/heads/main'
-    environment: production
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
+  # Деплой клиента на Vercel (отключен для тестирования)
+  # client-deploy-vercel:
+  #   runs-on: ubuntu-latest
+  #   needs: client-build
+  #   if: github.ref == 'refs/heads/main'
+  #   environment: production
+  #   steps:
+  #     - name: Checkout code
+  #       uses: actions/checkout@v4
+  #
+  #     - name: Download build artifacts
+  #       uses: actions/download-artifact@v4
+  #       with:
+  #         name: client-build
+  #         path: ./client/dist
+  #
+  #     - name: Deploy to Vercel
+  #       uses: amondnet/vercel-action@v25
+  #       with:
+  #         vercel-token: ${{ secrets.VERCEL_TOKEN }}
+  #         vercel-org-id: ${{ secrets.VERCEL_ORG_ID }}
+  #         vercel-project-id: ${{ secrets.VERCEL_PROJECT_ID }}
+  #         working-directory: ./client
+  #         vercel-args: '--prod'
 
-      - name: Download build artifacts
-        uses: actions/download-artifact@v4
-        with:
-          name: client-build
-          path: ./client/dist
-
-      - name: Deploy to Vercel
-        uses: amondnet/vercel-action@v25
-        with:
-          vercel-token: ${{ secrets.VERCEL_TOKEN }}
-          vercel-org-id: ${{ secrets.VERCEL_ORG_ID }}
-          vercel-project-id: ${{ secrets.VERCEL_PROJECT_ID }}
-          working-directory: ./client
-          vercel-args: '--prod'
-
-  # Деплой клиента на Netlify (альтернатива)
-  client-deploy-netlify:
-    runs-on: ubuntu-latest
-    needs: client-build
-    if: github.ref == 'refs/heads/main'
-    environment: production
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-      - name: Download build artifacts
-        uses: actions/download-artifact@v4
-        with:
-          name: client-build
-          path: ./client/dist
-
-      - name: Deploy to Netlify
-        uses: nwtgck/actions-netlify@v2.0
-        with:
-          publish-dir: './client/dist'
-          production-branch: main
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-          deploy-message: "Deploy from GitHub Actions"
-        env:
-          NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
-          NETLIFY_SITE_ID: ${{ secrets.NETLIFY_SITE_ID }} 
+  # Деплой клиента на Netlify (отключен для тестирования)
+  # client-deploy-netlify:
+  #   runs-on: ubuntu-latest
+  #   needs: client-build
+  #   if: github.ref == 'refs/heads/main'
+  #   environment: production
+  #   steps:
+  #     - name: Checkout code
+  #       uses: actions/checkout@v4
+  #
+  #     - name: Download build artifacts
+  #       uses: actions/download-artifact@v4
+  #       with:
+  #         name: client-build
+  #         path: ./client/dist
+  #
+  #     - name: Deploy to Netlify
+  #       uses: nwtgck/actions-netlify@v2.0
+  #       with:
+  #         publish-dir: './client/dist'
+  #         production-branch: main
+  #         github-token: ${{ secrets.GITHUB_TOKEN }}
+  #         deploy-message: "Deploy from GitHub Actions"
+  #       env:
+  #         NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
+  #         NETLIFY_SITE_ID: ${{ secrets.NETLIFY_SITE_ID }} 
