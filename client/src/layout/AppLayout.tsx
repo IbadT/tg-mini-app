@@ -1,8 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faPlus, faKey, faGift, faTrophy, faCog, faSignOutAlt, faFilter, faSearch } from '@fortawesome/free-solid-svg-icons';
-import keysApi from '../api/Keys';
+import { faPlus, faKey, faGift, faTrophy, faCog, faSignOutAlt, faSearch } from '@fortawesome/free-solid-svg-icons';
 import KeyModal from '../components/KeyModal';
 import CreateKeyForm from '../components/CreateKeyForm';
 
@@ -45,13 +44,8 @@ const AppLayout = () => {
         }
 
         // Загружаем данные
-        loadData();
-    }, [navigate]);
-
-    const loadData = () => {
-        // Загружаем моковые данные для демонстрации
         loadMockData();
-    };
+    }, [navigate]);
 
     const loadMockData = () => {
         const mockKeys: Key[] = [
@@ -119,10 +113,10 @@ const AppLayout = () => {
             setActiveTab('vault');
             
             // Показываем уведомление об успехе
-            showNotification('Ключ успешно создан!', 'success');
+            showNotification('Ключ успешно создан!');
         } catch (error) {
             console.error('Error creating key:', error);
-            showNotification('Ошибка при создании ключа', 'error');
+            showNotification('Ошибка при создании ключа');
         } finally {
             setIsLoading(false);
         }
@@ -147,10 +141,10 @@ const AppLayout = () => {
             setIsCreateFormOpen(false);
             setEditingKey(null);
             
-            showNotification('Ключ успешно обновлен!', 'success');
+            showNotification('Ключ успешно обновлен!');
         } catch (error) {
             console.error('Error updating key:', error);
-            showNotification('Ошибка при обновлении ключа', 'error');
+            showNotification('Ошибка при обновлении ключа');
         } finally {
             setIsLoading(false);
         }
@@ -170,10 +164,10 @@ const AppLayout = () => {
             setIsModalOpen(false);
             setSelectedKey(null);
             
-            showNotification('Ключ успешно удален!', 'success');
+            showNotification('Ключ успешно удален!');
         } catch (error) {
             console.error('Error deleting key:', error);
-            showNotification('Ошибка при удалении ключа', 'error');
+            showNotification('Ошибка при удалении ключа');
         } finally {
             setIsLoading(false);
         }
@@ -190,7 +184,7 @@ const AppLayout = () => {
         setIsModalOpen(false);
     };
 
-    const showNotification = (message: string, type: 'success' | 'error') => {
+    const showNotification = (message: string) => {
         // Простое уведомление через alert (в реальном приложении можно использовать toast)
         alert(message);
     };

@@ -83,7 +83,7 @@ const create_user = CatchAsync(async (req, res) => {
             data: {
                 name: parseValue?.user?.first_name + " " + parseValue?.user?.last_name,
                 tgId: String(parseValue?.user?.id),
-                username: parseValue?.user?.username,
+                username: parseValue?.user?.username || null,
                 referCode: String(parseValue?.user?.id),
                 referBy: "0",
             }

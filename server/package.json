@@ -9,6 +9,8 @@
   },
   "scripts": {
     "dev": "tsnd --respawn ./src/start.ts",
+    "build": "tsc",
+    "start": "node dist/start.js",
     "push": "npx prisma db push"
   },
   "devDependencies": {

@@ -23,7 +23,7 @@ interface CreateKeyFormProps {
 const CreateKeyForm = ({ isOpen, onClose, onSubmit, editingKey, isLoading = false }: CreateKeyFormProps) => {
     const [formData, setFormData] = useState({
         name: '',
-        type: 'access' as const,
+        type: 'access' as 'access' | 'gift' | 'achievement' | 'asset',
         description: '',
         value: ''
     });
