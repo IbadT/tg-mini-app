@@ -8,7 +8,7 @@ const create_user = CatchAsync(async (req, res) => {
     console.log("Body:", req?.body);
     console.log("Headers:", req?.headers);
     
-    const { key } = req?.body;
+    const { key } = req.body || {};
     
     // Fallback для разработки
     if (!key || key === "dev-key") {
@@ -66,7 +66,7 @@ const create_user = CatchAsync(async (req, res) => {
     const parseValue = parse(key);
     console.log("Parsed Telegram data:", parseValue);
 
-    const tx = await prisma.$transaction(async (tx) => {
+    const user = await prisma.$transaction(async (_tx) => {
         const user = await prisma.user.findFirst({
             where: {
                 tgId: String(parseValue?.user?.id)
@@ -93,7 +93,7 @@ const create_user = CatchAsync(async (req, res) => {
         return val;
     });
 
-    const token = jwt.sign(tx, process.env.SECRET as string);
+    const token = jwt.sign(user, process.env.SECRET as string);
     console.log("JWT token generated");
 
     res.send({ token: token });

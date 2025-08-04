@@ -4,7 +4,7 @@ export const CatchAsync = (fx: RequestHandler) => {
     return async (req: Request, res: Response, next: NextFunction) => Promise.resolve(fx(req, res, next)).catch(next);
 }
 
-const Error_Handler = (err: any, req: Request, res: Response, next: NextFunction) => {
+const Error_Handler = (err: unknown, _req: Request, res: Response, _next: NextFunction) => {
     if (err instanceof Error) {
         res.send({
             code: 400,
@@ -22,7 +22,7 @@ const Error_Handler = (err: any, req: Request, res: Response, next: NextFunction
     }
 };
 
-const NotFound = (req: Request, res: Response, next: NextFunction) => {
+const NotFound = (req: Request, res: Response, _next: NextFunction) => {
     res.send({
         code: 200,
         msg: "path not found",
