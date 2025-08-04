@@ -5,16 +5,24 @@ import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 
 const Splash = () => {
-    const [trigger, { data }] = user.LoginUser();
+    const [trigger, { data, error, isLoading }] = user.LoginUser();
     const navigate = useNavigate();
 
     useEffect(() => {
+        console.log("Splash: Starting login process");
+        console.log("WebApp.initData:", WebApp.initData);
         trigger({ key: WebApp.initData });
     }, [trigger]);
 
+    useEffect(() => {
+        if (error) {
+            console.error("Login error:", error);
+        }
+    }, [error]);
 
     useEffect(() => {
         if (data?.token) {
+            console.log("Login successful, token received");
             sessionStorage.setItem("token", data?.token);
             navigate("/app", { replace: true });
         }

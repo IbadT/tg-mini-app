@@ -14,6 +14,11 @@ app.use(cors({
 
 app.use(express.json());
 
+// Логирование всех запросов
+app.use((req, res, next) => {
+    console.log(`${req.method} ${req.path}`, req.body);
+    next();
+});
 
 app.get("/", Utility.CatchAsync(async (req, res) => {
     res.send({

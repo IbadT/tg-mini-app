@@ -7,6 +7,10 @@ import WebApp from '@twa-dev/sdk'
 import { RouterProvider } from 'react-router-dom'
 import Routes from './routes.tsx'
 
+console.log("App starting...");
+console.log("WebApp platform:", WebApp.platform);
+console.log("WebApp initData:", WebApp.initData);
+
 const isTelegram = WebApp.platform;
 const theme = isTelegram === "unknown" ? "" : "dark";
 
