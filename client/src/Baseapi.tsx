@@ -4,7 +4,7 @@ import { createApi } from "@reduxjs/toolkit/query/react";
 const BaseApi = createApi({
     reducerPath: "api",
     baseQuery: fetchBaseQuery({
-        baseUrl: "http://localhost:3000"
+        baseUrl: "https://telegram-mini-app-todo-list.onrender.com"
     }),
     endpoints: () => ({})
 });

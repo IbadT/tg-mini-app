@@ -10,42 +10,9 @@ const create_user = CatchAsync(async (req, res) => {
     
     const { key } = req.body || {};
     
-    // Fallback для разработки
-    if (!key || key === "dev-key") {
-        console.log("Development mode - creating mock user");
-        
-        if (!process.env.SECRET) {
-            console.log("ERROR: SECRET not set");
-            throw new Error("SECRET not configured");
-        }
-
-        // Создаем мокового пользователя для разработки
-        const mockUser = await prisma.user.findFirst({
-            where: { tgId: "dev-user-123" }
-        });
-
-        let user;
-        if (mockUser) {
-            user = mockUser;
-            console.log("Mock user found:", user.id);
-        } else {
-            user = await prisma.user.create({
-                data: {
-                    name: "Development User",
-                    tgId: "dev-user-123",
-                    username: "dev_user",
-                    referCode: "dev-user-123",
-                    referBy: "0",
-                }
-            });
-            console.log("Mock user created:", user.id);
-        }
-
-        const token = jwt.sign(user, process.env.SECRET as string);
-        console.log("JWT token generated for dev user");
-        
-        res.send({ token: token });
-        return;
+    if (!key) {
+        console.log("ERROR: No init data provided");
+        throw new Error("Telegram init data is required");
     }
 
     if (!process.env.BOT_TOKEN) {
