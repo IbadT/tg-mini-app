@@ -13,7 +13,8 @@
     "start": "node dist/start.js",
     "lint": "eslint src/**/*.ts --ext .ts",
     "lint:fix": "eslint src/**/*.ts --ext .ts --fix",
-    "push": "npx prisma db push"
+    "push": "npx prisma db push",
+    "postinstall": "npx prisma generate"
   },
   "devDependencies": {
     "@types/cors": "^2.8.19",
