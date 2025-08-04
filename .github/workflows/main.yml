@@ -25,6 +25,9 @@ jobs:
 
       - name: Install dependencies (Server)
         working-directory: ./server
+        env:
+          DATABASE_URL: file:./test.db
+          SECRET: test-secret-key
         run: npm ci
 
       - name: Lint Client
@@ -33,6 +36,9 @@ jobs:
 
       - name: Lint Server
         working-directory: ./server
+        env:
+          DATABASE_URL: file:./test.db
+          SECRET: test-secret-key
         run: npm run lint
 
   # Тестирование
@@ -54,6 +60,9 @@ jobs:
 
       - name: Install dependencies (Server)
         working-directory: ./server
+        env:
+          DATABASE_URL: file:./test.db
+          SECRET: test-secret-key
         run: npm ci
 
       - name: Run tests (Client)
@@ -62,6 +71,9 @@ jobs:
 
       - name: Run tests (Server)
         working-directory: ./server
+        env:
+          DATABASE_URL: file:./test.db
+          SECRET: test-secret-key
         run: npm test --if-present
 
   # Сборка
@@ -83,6 +95,9 @@ jobs:
 
       - name: Install dependencies (Server)
         working-directory: ./server
+        env:
+          DATABASE_URL: file:./test.db
+          SECRET: test-secret-key
         run: npm ci
 
       - name: Build Client
@@ -91,6 +106,10 @@ jobs:
 
       - name: Build Server
         working-directory: ./server
+        env:
+          DATABASE_URL: file:./test.db
+          SECRET: test-secret-key
+          NODE_ENV: production
         run: npm run build
 
       - name: Upload Client Build Artifacts

@@ -27,6 +27,9 @@ jobs:
 
       - name: Install dependencies (Server)
         working-directory: ./server
+        env:
+          DATABASE_URL: file:./test.db
+          SECRET: test-secret-key
         run: npm ci
 
       - name: Run npm audit (Client)
@@ -35,6 +38,9 @@ jobs:
 
       - name: Run npm audit (Server)
         working-directory: ./server
+        env:
+          DATABASE_URL: file:./test.db
+          SECRET: test-secret-key
         run: npm audit --audit-level moderate
 
   # Сканирование кода на уязвимости
@@ -87,6 +93,9 @@ jobs:
 
       - name: Install dependencies (Server)
         working-directory: ./server
+        env:
+          DATABASE_URL: file:./test.db
+          SECRET: test-secret-key
         run: npm ci
 
       - name: Check licenses (Client)
@@ -95,6 +104,9 @@ jobs:
 
       - name: Check licenses (Server)
         working-directory: ./server
+        env:
+          DATABASE_URL: file:./test.db
+          SECRET: test-secret-key
         run: npx license-checker --summary
 
   # Проверка размера бандла

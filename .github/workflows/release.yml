@@ -24,6 +24,9 @@ jobs:
 
       - name: Install dependencies (Server)
         working-directory: ./server
+        env:
+          DATABASE_URL: file:./test.db
+          SECRET: test-secret-key
         run: npm ci
 
       - name: Build Client
@@ -32,6 +35,10 @@ jobs:
 
       - name: Build Server
         working-directory: ./server
+        env:
+          DATABASE_URL: file:./test.db
+          SECRET: test-secret-key
+          NODE_ENV: production
         run: npm run build
 
       - name: Create Release
@@ -138,6 +145,9 @@ jobs:
 
       - name: Install dependencies (Server)
         working-directory: ./server
+        env:
+          DATABASE_URL: file:./test.db
+          SECRET: test-secret-key
         run: npm ci
 
       - name: Build Client
@@ -146,6 +156,10 @@ jobs:
 
       - name: Build Server
         working-directory: ./server
+        env:
+          DATABASE_URL: file:./test.db
+          SECRET: test-secret-key
+          NODE_ENV: production
         run: npm run build
 
       - name: Deploy Client to Vercel
