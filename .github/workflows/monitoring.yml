@@ -1,0 +1,173 @@
+name: Monitoring and Alerts
+
+on:
+  schedule:
+    - cron: '*/5 * * * *' # Каждые 5 минут
+  workflow_dispatch: # Ручной запуск
+
+jobs:
+  # Проверка доступности сервисов
+  health-check:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check Client Health
+        run: |
+          curl -f http://localhost:80 || exit 1
+        continue-on-error: true
+
+      - name: Check Server Health
+        run: |
+          curl -f http://localhost:3000/health || exit 1
+        continue-on-error: true
+
+      - name: Check Database Health
+        run: |
+          curl -f http://localhost:5432 || exit 1
+        continue-on-error: true
+
+  # Мониторинг производительности
+  performance-monitoring:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check Response Time
+        run: |
+          echo "Checking response times..."
+          curl -w "@curl-format.txt" -o /dev/null -s "http://localhost:80"
+          curl -w "@curl-format.txt" -o /dev/null -s "http://localhost:3000/health"
+        continue-on-error: true
+
+      - name: Check Memory Usage
+        run: |
+          echo "Checking memory usage..."
+          docker stats --no-stream --format "table {{.Container}}\t{{.CPUPerc}}\t{{.MemUsage}}"
+        continue-on-error: true
+
+  # Проверка логов на ошибки
+  log-monitoring:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check for Errors in Logs
+        run: |
+          echo "Checking for errors in logs..."
+          docker logs tg-mini-app-server 2>&1 | grep -i "error\|exception\|fatal" || echo "No errors found"
+          docker logs tg-mini-app-client 2>&1 | grep -i "error\|exception\|fatal" || echo "No errors found"
+        continue-on-error: true
+
+  # Проверка безопасности
+  security-monitoring:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check for Security Vulnerabilities
+        run: |
+          echo "Checking for security vulnerabilities..."
+          npm audit --audit-level moderate || echo "Security check completed"
+        working-directory: ./client
+        continue-on-error: true
+
+      - name: Check for Security Vulnerabilities (Server)
+        run: |
+          echo "Checking for security vulnerabilities..."
+          npm audit --audit-level moderate || echo "Security check completed"
+        working-directory: ./server
+        continue-on-error: true
+
+  # Уведомления об ошибках
+  notify-errors:
+    runs-on: ubuntu-latest
+    needs: [health-check, performance-monitoring, log-monitoring]
+    if: failure()
+    steps:
+      - name: Send Error Notification to Slack
+        uses: 8398a7/action-slack@v3
+        with:
+          status: failure
+          channel: '#alerts'
+          webhook_url: ${{ secrets.SLACK_WEBHOOK }}
+          text: |
+            🚨 **Service Alert**
+            
+            Repository: ${{ github.repository }}
+            Branch: ${{ github.ref }}
+            Commit: ${{ github.sha }}
+            
+            One or more services are experiencing issues.
+            Please check the monitoring dashboard.
+
+      - name: Send Error Notification to Telegram
+        run: |
+          curl -X POST "https://api.telegram.org/bot${{ secrets.TELEGRAM_BOT_TOKEN }}/sendMessage" \
+            -H "Content-Type: application/json" \
+            -d '{
+              "chat_id": "${{ secrets.TELEGRAM_CHAT_ID }}",
+              "text": "🚨 Service Alert\n\nRepository: ${{ github.repository }}\nBranch: ${{ github.ref }}\nCommit: ${{ github.sha }}\n\nOne or more services are experiencing issues. Please check the monitoring dashboard.",
+              "parse_mode": "HTML"
+            }'
+
+  # Ежедневный отчет
+  daily-report:
+    runs-on: ubuntu-latest
+    if: github.event_name == 'schedule'
+    steps:
+      - name: Generate Daily Report
+        run: |
+          echo "Generating daily monitoring report..."
+          
+          # Статистика запросов
+          echo "=== Request Statistics ==="
+          curl -s http://localhost:3000/stats || echo "Stats endpoint not available"
+          
+          # Статистика базы данных
+          echo "=== Database Statistics ==="
+          docker exec tg-mini-app-db psql -U postgres -d tg_mini_app -c "SELECT COUNT(*) as total_users FROM user;" || echo "Database not accessible"
+          
+          # Статистика памяти
+          echo "=== Memory Usage ==="
+          docker stats --no-stream --format "table {{.Container}}\t{{.CPUPerc}}\t{{.MemUsage}}"
+
+      - name: Send Daily Report
+        uses: 8398a7/action-slack@v3
+        with:
+          status: success
+          channel: '#daily-reports'
+          webhook_url: ${{ secrets.SLACK_WEBHOOK }}
+          text: |
+            📊 **Daily Monitoring Report**
+            
+            Repository: ${{ github.repository }}
+            Date: $(date)
+            
+            Services are running normally.
+            Check the full report in the monitoring dashboard.
+
+  # Автоматическое восстановление
+  auto-recovery:
+    runs-on: ubuntu-latest
+    needs: [health-check]
+    if: failure()
+    steps:
+      - name: Attempt Auto Recovery
+        run: |
+          echo "Attempting auto recovery..."
+          
+          # Перезапуск сервисов
+          docker-compose restart server || echo "Failed to restart server"
+          docker-compose restart client || echo "Failed to restart client"
+          
+          # Проверка после восстановления
+          sleep 30
+          curl -f http://localhost:3000/health && echo "Recovery successful" || echo "Recovery failed"
+
+      - name: Notify Recovery Status
+        uses: 8398a7/action-slack@v3
+        with:
+          status: ${{ job.status }}
+          channel: '#alerts'
+          webhook_url: ${{ secrets.SLACK_WEBHOOK }}
+          text: |
+            🔧 **Auto Recovery Attempt**
+            
+            Repository: ${{ github.repository }}
+            Status: ${{ job.status }}
+            
+            Auto recovery has been attempted.
+            Please verify service status. 

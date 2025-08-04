@@ -1,0 +1,130 @@
+name: Security Checks
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main ]
+  schedule:
+    - cron: '0 0 * * 0' # Каждое воскресенье в полночь
+
+jobs:
+  # Проверка уязвимостей в зависимостях
+  dependency-check:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          cache: 'npm'
+
+      - name: Install dependencies (Client)
+        working-directory: ./client
+        run: npm ci
+
+      - name: Install dependencies (Server)
+        working-directory: ./server
+        run: npm ci
+
+      - name: Run npm audit (Client)
+        working-directory: ./client
+        run: npm audit --audit-level moderate
+
+      - name: Run npm audit (Server)
+        working-directory: ./server
+        run: npm audit --audit-level moderate
+
+  # Сканирование кода на уязвимости
+  code-scanning:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Initialize CodeQL
+        uses: github/codeql-action/init@v3
+        with:
+          languages: javascript
+
+      - name: Autobuild
+        uses: github/codeql-action/autobuild@v3
+
+      - name: Perform CodeQL Analysis
+        uses: github/codeql-action/analyze@v3
+
+  # Проверка секретов в коде
+  secret-scanning:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Run TruffleHog
+        uses: trufflesecurity/trufflehog@main
+        with:
+          path: ./
+          base: HEAD~1
+          head: HEAD
+
+  # Проверка лицензий
+  license-check:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          cache: 'npm'
+
+      - name: Install dependencies (Client)
+        working-directory: ./client
+        run: npm ci
+
+      - name: Install dependencies (Server)
+        working-directory: ./server
+        run: npm ci
+
+      - name: Check licenses (Client)
+        working-directory: ./client
+        run: npx license-checker --summary
+
+      - name: Check licenses (Server)
+        working-directory: ./server
+        run: npx license-checker --summary
+
+  # Проверка размера бандла
+  bundle-size:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          cache: 'npm'
+          cache-dependency-path: client/package-lock.json
+
+      - name: Install dependencies
+        working-directory: ./client
+        run: npm ci
+
+      - name: Build
+        working-directory: ./client
+        run: npm run build
+
+      - name: Check bundle size
+        working-directory: ./client
+        run: |
+          echo "Checking bundle size..."
+          du -sh dist/
+          echo "Largest files:"
+          find dist/ -type f -name "*.js" -exec du -h {} + | sort -hr | head -10 
