@@ -46,7 +46,8 @@ const AppLayout = () => {
             if (payload.name) {
                 setUserName(payload.name);
             }
-        } catch (e) {
+        } catch (e: unknown) {
+            console.error('Error decoding token:', e);
             // Если не удалось декодировать, оставляем "Пользователь"
         }
 
