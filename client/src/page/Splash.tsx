@@ -13,8 +13,9 @@ const Splash = () => {
         const timer = setTimeout(() => {
             // Проверяем, что мы в Telegram Mini App и есть initData
             if (WebApp.platform === "unknown" || !WebApp.initData) {
-                // Если не в Telegram или нет initData, используем тестовые данные
-                trigger({ key: "test_data" });
+                // Если не в Telegram или нет initData, показываем ошибку
+                console.error("Telegram Mini App not initialized properly");
+                return;
             } else {
                 // В Telegram используем реальные данные
                 trigger({ key: WebApp.initData });

@@ -11,45 +11,15 @@ const create_user = CatchAsync(async (req, res) => {
     const { key } = req.body || {};
     
     if (!key || key === "test_data") {
-        // Для тестирования создаем мокового пользователя
-        const mockUser = {
-            id: 1,
-            name: "Test User",
-            tgId: "test_user_123",
-            username: "testuser",
-            referCode: "test_user_123",
-            referBy: "0",
-            balance: 0,
-            joinedAt: new Date(),
-            lastSeenAt: null,
-            isBlock: false,
-            isDelete: false
-        };
-        
-        const token = jwt.sign(mockUser, process.env.SECRET as string);
-        res.status(200).json({ token: token });
+        // Для тестирования, возвращаем ошибку - нужны реальные данные
+        res.status(400).json({ error: 'Real Telegram data required' });
         return;
     }
 
     // Проверяем, что это реальные данные Telegram
     if (!key.startsWith('query_id=')) {
-        // Если данные не похожи на Telegram initData, используем тестовые данные
-        const mockUser = {
-            id: 1,
-            name: "Telegram User",
-            tgId: "telegram_user_123",
-            username: "telegramuser",
-            referCode: "telegram_user_123",
-            referBy: "0",
-            balance: 0,
-            joinedAt: new Date(),
-            lastSeenAt: null,
-            isBlock: false,
-            isDelete: false
-        };
-        
-        const token = jwt.sign(mockUser, process.env.SECRET as string);
-        res.status(200).json({ token: token });
+        // Если данные не похожи на Telegram initData, возвращаем ошибку
+        res.status(400).json({ error: 'Invalid Telegram data' });
         return;
     }
 
@@ -113,37 +83,15 @@ const create_user = CatchAsync(async (req, res) => {
         });
 
         console.log("Transaction completed successfully");
-        return user;
+        
+        const token = jwt.sign(user, process.env.SECRET as string);
+        res.status(200).json({ token: token });
     } catch (error) {
         console.error("Error in user creation:", error);
-        
-        // Если база данных недоступна, создаем моковый пользователь
-        // if (error?.code === 'P1008' || error?.code === 'P1001') {
-            console.log("Database unavailable, creating mock user");
-            const mockUser = {
-                id: 1,
-                name: parseValue?.user?.first_name + " " + parseValue?.user?.last_name,
-                tgId: String(parseValue?.user?.id),
-                username: parseValue?.user?.username || null,
-                referCode: String(parseValue?.user?.id),
-                referBy: "0",
-                balance: 0,
-                joinedAt: new Date(),
-                lastSeenAt: null,
-                isBlock: false,
-                isDelete: false
-            };
-            return mockUser;
-        // }
-        
         throw error;
     } finally {
         await prisma.$disconnect();
     }
-
-    const token = jwt.sign(user, process.env.SECRET as string);
-
-    res.status(200).json({ token: token });
 });
 
 const get_users = CatchAsync(async (req, res) => {
