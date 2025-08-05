@@ -42,13 +42,13 @@ const AppLayout = () => {
 
         // Декодируем токен и устанавливаем имя пользователя
         try {
-            const payload = JSON.parse(atob(token.split('.')[1]));
-            if (payload.name) {
+            const base64Payload = token.split('.')[1];
+            const payload = JSON.parse(atob(base64Payload));
+            if (payload && payload.name) {
                 setUserName(payload.name);
             }
         } catch (e: unknown) {
             console.error('Error decoding token:', e);
-            throw e;
             // Если не удалось декодировать, оставляем "Пользователь"
         }
 
