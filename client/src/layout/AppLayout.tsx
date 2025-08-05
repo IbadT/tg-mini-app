@@ -33,7 +33,7 @@ const AppLayout = () => {
     const { data: userProfile } = user.GetUserProfile(undefined, {
         skip: !sessionStorage.getItem('token')
     });
-
+    console.log('userProfile', userProfile);
     useEffect(() => {
         // Проверяем токен при загрузке
         const token = sessionStorage.getItem('token');
@@ -50,8 +50,8 @@ const AppLayout = () => {
 
     useEffect(() => {
         // Обновляем данные пользователя когда получаем профиль
-        if (userProfile?.data?.data) {
-            setUserName(userProfile.data.data.name);
+        if (userProfile) {
+            setUserName(userProfile.data.name);
         }
     }, [userProfile]);
 
