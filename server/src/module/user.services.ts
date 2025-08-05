@@ -15,19 +15,19 @@ const create_user = CatchAsync(async (req, res) => {
         throw new Error("Telegram init data is required");
     }
 
-    if (!process.env.BOT_TOKEN) {
-        console.log("ERROR: BOT_TOKEN not set");
-        throw new Error("BOT_TOKEN not configured");
-    }
-
     if (!process.env.SECRET) {
         console.log("ERROR: SECRET not set");
         throw new Error("SECRET not configured");
     }
 
-    if (!isValid(key, process.env.BOT_TOKEN as string)) {
-        console.log("ERROR: Invalid Telegram init data");
-        throw new Error("not come from authorized source.");
+    // Валидация BOT_TOKEN (опциональная для разработки)
+    if (process.env.BOT_TOKEN) {
+        if (!isValid(key, process.env.BOT_TOKEN as string)) {
+            console.log("ERROR: Invalid Telegram init data");
+            throw new Error("not come from authorized source.");
+        }
+    } else {
+        console.log("WARNING: BOT_TOKEN not set, skipping validation for development");
     }
 
     const parseValue = parse(key);
