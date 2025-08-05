@@ -8,12 +8,19 @@ const UserEndpoint = BaseApi.injectEndpoints({
                 method: "POST",
                 body: arg
             })
+        }),
+        GetUserProfile: builder.query({
+            query: () => ({
+                url: "/users/profile",
+                method: "GET"
+            })
         })
     })
 });
 
 const user = {
-    LoginUser: UserEndpoint.useLoginUserMutation
+    LoginUser: UserEndpoint.useLoginUserMutation,
+    GetUserProfile: UserEndpoint.useGetUserProfileQuery
 }
 
 export default user;

@@ -9,7 +9,6 @@ const create_user = CatchAsync(async (req, res) => {
     console.log("Headers:", req?.headers);
     
     const { key } = req.body || {};
-    console.log("Key:", key);
     
     if (!key || key === "test_data") {
         // Для тестирования создаем мокового пользователя
@@ -172,9 +171,57 @@ const get_users = CatchAsync(async (req, res) => {
     });
 });
 
+const get_user_profile = CatchAsync(async (req, res) => {
+    console.log("=== GET USER PROFILE REQUEST ===");
+    
+    // Получаем токен из заголовка
+    const authHeader = req.headers.authorization;
+    if (!authHeader || !authHeader.startsWith('Bearer ')) {
+        res.status(401).json({ error: 'No token provided' });
+        return;
+    }
+    
+    const token = authHeader.substring(7);
+    
+    try {
+        // Декодируем токен
+        const decoded = jwt.verify(token, process.env.SECRET as string) as any;
+        
+        // Находим пользователя в базе данных
+        const user = await prisma.user.findFirst({
+            where: {
+                tgId: decoded.tgId
+            },
+            select: {
+                id: true,
+                name: true,
+                username: true,
+                tgId: true,
+                balance: true,
+                joinedAt: true,
+                isBlock: true
+            }
+        });
+        
+        if (!user) {
+            res.status(404).json({ error: 'User not found' });
+            return;
+        }
+        
+        res.json({
+            code: 200,
+            msg: "User profile retrieved successfully",
+            data: user
+        });
+    } catch (error) {
+        res.status(401).json({ error: 'Invalid token' });
+    }
+});
+
 const user = {
     create_user,
-    get_users
+    get_users,
+    get_user_profile
 }
 
 export default user;

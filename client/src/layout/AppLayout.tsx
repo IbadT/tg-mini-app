@@ -4,6 +4,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faPlus, faKey, faGift, faTrophy, faCog, faSignOutAlt, faSearch } from '@fortawesome/free-solid-svg-icons';
 import KeyModal from '../components/KeyModal';
 import CreateKeyForm from '../components/CreateKeyForm';
+import user from '../api/User';
 
 interface Key {
     id: string;
@@ -28,12 +29,10 @@ const AppLayout = () => {
     const [filterType, setFilterType] = useState<string>('all');
     const navigate = useNavigate();
 
-    // API hooks (пока отключены для демонстрации)
-    // const [getUserKeys, { data: keysData, isLoading: keysLoading }] = keysApi.getUserKeys();
-    // const [createKey, { isLoading: createLoading }] = keysApi.createKey();
-    // const [deleteKey, { isLoading: deleteLoading }] = keysApi.deleteKey();
-    // const [updateKey, { isLoading: updateLoading }] = keysApi.updateKey();
-    // const [getUserProfile, { data: profileData }] = keysApi.getUserProfile();
+    // API hooks
+    const { data: userProfile } = user.GetUserProfile(undefined, {
+        skip: !sessionStorage.getItem('token')
+    });
 
     useEffect(() => {
         // Проверяем токен при загрузке
@@ -46,6 +45,13 @@ const AppLayout = () => {
         // Загружаем данные
         loadMockData();
     }, [navigate]);
+
+    useEffect(() => {
+        // Обновляем данные пользователя когда получаем профиль
+        if (userProfile?.data) {
+            setUserName(userProfile.data.name);
+        }
+    }, [userProfile]);
 
     const loadMockData = () => {
         const mockKeys: Key[] = [
