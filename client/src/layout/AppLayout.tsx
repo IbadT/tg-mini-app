@@ -48,8 +48,8 @@ const AppLayout = () => {
 
     useEffect(() => {
         // Обновляем данные пользователя когда получаем профиль
-        if (userProfile?.data) {
-            setUserName(userProfile.data.name);
+        if (userProfile?.data?.data) {
+            setUserName(userProfile.data.data.name);
         }
     }, [userProfile]);
 
