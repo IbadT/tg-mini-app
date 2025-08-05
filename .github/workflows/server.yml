@@ -26,14 +26,14 @@ jobs:
       - name: Install dependencies
         working-directory: ./server
         env:
-          DATABASE_URL: file:./test.db
+          DATABASE_URL: postgresql://postgres:postgres@localhost:5432/test_db
           SECRET: test-secret-key
         run: npm ci
 
       - name: Lint with ESLint
         working-directory: ./server
         env:
-          DATABASE_URL: file:./test.db
+          DATABASE_URL: postgresql://postgres:postgres@localhost:5432/test_db
           SECRET: test-secret-key
         run: npm run lint
 
@@ -70,14 +70,14 @@ jobs:
       - name: Install dependencies
         working-directory: ./server
         env:
-          DATABASE_URL: file:./test.db
+          DATABASE_URL: postgresql://postgres:postgres@localhost:5432/test_db
           SECRET: test-secret-key
         run: npm ci
 
       - name: Setup database
         working-directory: ./server
         env:
-          DATABASE_URL: file:./test.db
+          DATABASE_URL: postgresql://postgres:postgres@localhost:5432/test_db
         run: |
           npx prisma generate
           npx prisma db push
@@ -85,7 +85,7 @@ jobs:
       - name: Run tests
         working-directory: ./server
         env:
-          DATABASE_URL: file:./test.db
+          DATABASE_URL: postgresql://postgres:postgres@localhost:5432/test_db
           NODE_ENV: test
           SECRET: test-secret-key
         run: npm test --if-present
