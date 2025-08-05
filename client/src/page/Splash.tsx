@@ -5,20 +5,26 @@ import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 
 const Splash = () => {
-    const [trigger, { data }] = user.LoginUser();
+    const [trigger, { data, error, isLoading }] = user.LoginUser();
     const navigate = useNavigate();
 
     useEffect(() => {
+        console.log("Splash: Starting login process");
+        console.log("WebApp.initData:", WebApp.initData);
         trigger({ key: WebApp.initData });
     }, [trigger]);
 
-
     useEffect(() => {
-        if (data?.token) {
-            sessionStorage.setItem("token", data?.token);
+        console.log("Splash: Data received:", data);
+        console.log("Splash: Error:", error);
+        console.log("Splash: Loading:", isLoading);
+        
+        if (data?.data?.token) {
+            console.log("Splash: Token received, navigating to /app");
+            sessionStorage.setItem("token", data.data.token);
             navigate("/app", { replace: true });
         }
-    }, [data?.token, navigate]);
+    }, [data?.data?.token, navigate, data, error, isLoading]);
 
     return (
         <div style={{ background: `${WebApp.themeParams.bg_color}` }} className="flex items-center justify-center min-h-screen relative">

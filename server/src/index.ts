@@ -20,6 +20,16 @@ app.use((req, res, next) => {
     next();
 });
 
+// Логирование всех ответов
+app.use((req, res, next) => {
+    const originalSend = res.send;
+    res.send = function(data) {
+        console.log(`Response for ${req.method} ${req.path}:`, data);
+        return originalSend.call(this, data);
+    };
+    next();
+});
+
 app.get("/", Utility.CatchAsync(async (req, res) => {
     res.send({
         code: 200,

@@ -105,8 +105,10 @@ const create_user = CatchAsync(async (req, res) => {
 
     const token = jwt.sign(user, process.env.SECRET as string);
     console.log("JWT token generated");
+    console.log("Sending response:", { token: token });
 
     res.send({ token: token });
+    console.log("Response sent successfully");
 });
 
 const get_users = CatchAsync(async (req, res) => {
