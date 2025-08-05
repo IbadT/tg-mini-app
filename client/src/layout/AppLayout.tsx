@@ -93,7 +93,7 @@ const AppLayout = () => {
             }
         ];
         setKeys(mockKeys);
-        setUserName('Александр');
+        // setUserName('Александр'); // Убираем, так как имя пользователя загружается из API
     };
 
     const handleCreateKey = async (keyData: Partial<Key>) => {
