@@ -8,12 +8,12 @@ const UserEndpoint = BaseApi.injectEndpoints({
                 method: "POST",
                 body: arg
             }),
-            transformResponse: (response: any) => {
+            transformResponse: (response: { token: string }) => {
                 console.log("API Response:", response);
                 // RTK Query ожидает data в ответе
                 return { data: response };
             },
-            transformErrorResponse: (response: any) => {
+            transformErrorResponse: (response: { status: number; data: string }) => {
                 console.log("API Error Response:", response);
                 return response;
             }
