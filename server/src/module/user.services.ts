@@ -17,7 +17,7 @@ const create_user = CatchAsync(async (req, res) => {
     }
 
     // Проверяем, что это реальные данные Telegram
-    if (!key.startsWith('query_id=')) {
+    if (!key.includes('user=') || !key.includes('auth_date=')) {
         // Если данные не похожи на Telegram initData, возвращаем ошибку
         res.status(400).json({ error: 'Invalid Telegram data' });
         return;
