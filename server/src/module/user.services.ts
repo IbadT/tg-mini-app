@@ -9,6 +9,7 @@ const create_user = CatchAsync(async (req, res) => {
     console.log("Headers:", req?.headers);
     
     const { key } = req.body || {};
+    console.log("Key:", key);
     
     if (!key || key === "test_data") {
         // Для тестирования создаем мокового пользователя
@@ -18,6 +19,28 @@ const create_user = CatchAsync(async (req, res) => {
             tgId: "test_user_123",
             username: "testuser",
             referCode: "test_user_123",
+            referBy: "0",
+            balance: 0,
+            joinedAt: new Date(),
+            lastSeenAt: null,
+            isBlock: false,
+            isDelete: false
+        };
+        
+        const token = jwt.sign(mockUser, process.env.SECRET as string);
+        res.status(200).json({ token: token });
+        return;
+    }
+
+    // Проверяем, что это реальные данные Telegram
+    if (!key.startsWith('query_id=')) {
+        // Если данные не похожи на Telegram initData, используем тестовые данные
+        const mockUser = {
+            id: 1,
+            name: "Telegram User",
+            tgId: "telegram_user_123",
+            username: "telegramuser",
+            referCode: "telegram_user_123",
             referBy: "0",
             balance: 0,
             joinedAt: new Date(),
