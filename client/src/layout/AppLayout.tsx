@@ -30,9 +30,7 @@ const AppLayout = () => {
     const navigate = useNavigate();
 
     // API hooks
-    const { data: userProfile } = user.GetUserProfile(undefined, {
-        skip: !sessionStorage.getItem('token')
-    });
+    const { data: userProfile } = user.GetUserProfile(undefined);
 
     useEffect(() => {
         // Проверяем токен при загрузке
