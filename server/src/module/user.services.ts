@@ -33,32 +33,49 @@ const create_user = CatchAsync(async (req, res) => {
     const parseValue = parse(key);
     console.log("Parsed Telegram data:", parseValue);
 
-    const user = await prisma.$transaction(async (_tx) => {
-        const user = await prisma.user.findFirst({
-            where: {
-                tgId: String(parseValue?.user?.id)
+    try {
+        const user = await prisma.$transaction(async (_tx) => {
+            console.log("Checking if user exists...");
+            const existingUser = await prisma.user.findFirst({
+                where: {
+                    tgId: String(parseValue?.user?.id)
+                }
+            });
+
+            if (existingUser) {
+                console.log("User found:", existingUser.id);
+                return existingUser;
             }
-        });
 
-        if (user) {
-            console.log("User found:", user.id);
-            return user;
-        }
-
-        console.log("Creating new user...");
-        const val = await prisma.user.create({
-            data: {
+            console.log("Creating new user...");
+            console.log("User data:", {
                 name: parseValue?.user?.first_name + " " + parseValue?.user?.last_name,
                 tgId: String(parseValue?.user?.id),
                 username: parseValue?.user?.username || null,
                 referCode: String(parseValue?.user?.id),
                 referBy: "0",
-            }
+            });
+
+            const newUser = await prisma.user.create({
+                data: {
+                    name: parseValue?.user?.first_name + " " + parseValue?.user?.last_name,
+                    tgId: String(parseValue?.user?.id),
+                    username: parseValue?.user?.username || null,
+                    referCode: String(parseValue?.user?.id),
+                    referBy: "0",
+                }
+            });
+
+            console.log("New user created successfully:", newUser.id);
+            return newUser;
         });
 
-        console.log("New user created:", val.id);
-        return val;
-    });
+        console.log("Transaction completed successfully");
+        return user;
+    } catch (error) {
+        console.error("Error in user creation:", error);
+        throw error;
+    }
 
     const token = jwt.sign(user, process.env.SECRET as string);
     console.log("JWT token generated");
