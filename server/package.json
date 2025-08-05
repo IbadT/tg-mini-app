@@ -14,7 +14,7 @@
   "scripts": {
     "dev": "tsnd --respawn ./src/start.ts",
     "build": "npx prisma generate && tsc",
-    "start": "npx prisma db push --force-reset --accept-data-loss && node dist/start.js",
+    "start": "DATABASE_URL=file:/tmp/telegram_app.db npx prisma db push --force-reset --accept-data-loss && node dist/start.js",
     "lint": "eslint src/**/*.ts --ext .ts",
     "lint:fix": "eslint src/**/*.ts --ext .ts --fix",
     "push": "npx prisma db push"
