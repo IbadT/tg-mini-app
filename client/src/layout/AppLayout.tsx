@@ -43,6 +43,7 @@ const AppLayout = () => {
         // Декодируем токен и устанавливаем имя пользователя
         try {
             const payload = JSON.parse(atob(token.split('.')[1]));
+            console.log("payload: ", payload);
             if (payload.name) {
                 setUserName(payload.name);
             }
