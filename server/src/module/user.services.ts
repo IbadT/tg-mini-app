@@ -114,11 +114,11 @@ const create_user = CatchAsync(async (req, res) => {
 
         console.log("Transaction completed successfully");
         return user;
-    } catch (error: any) {
+    } catch (error) {
         console.error("Error in user creation:", error);
         
         // Если база данных недоступна, создаем моковый пользователь
-        if (error?.code === 'P1008' || error?.code === 'P1001') {
+        // if (error?.code === 'P1008' || error?.code === 'P1001') {
             console.log("Database unavailable, creating mock user");
             const mockUser = {
                 id: 1,
@@ -134,7 +134,7 @@ const create_user = CatchAsync(async (req, res) => {
                 isDelete: false
             };
             return mockUser;
-        }
+        // }
         
         throw error;
     } finally {
@@ -185,7 +185,7 @@ const get_user_profile = CatchAsync(async (req, res) => {
     
     try {
         // Декодируем токен
-        const decoded = jwt.verify(token, process.env.SECRET as string) as any;
+        const decoded = jwt.verify(token, process.env.SECRET as string) as { tgId: string };
         
         // Находим пользователя в базе данных
         const user = await prisma.user.findFirst({
@@ -213,7 +213,8 @@ const get_user_profile = CatchAsync(async (req, res) => {
             msg: "User profile retrieved successfully",
             data: user
         });
-    } catch (error) {
+    } catch(error: unknown) {
+        console.error("Error in user profile retrieval:", error);
         res.status(401).json({ error: 'Invalid token' });
     }
 });
