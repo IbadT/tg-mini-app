@@ -30,7 +30,9 @@ const AppLayout = () => {
     const navigate = useNavigate();
 
     // API hooks
-    const { data: userProfile } = user.GetUserProfile(undefined);
+    const { data: userProfile } = user.GetUserProfile(undefined, {
+        skip: !sessionStorage.getItem('token')
+    });
 
     useEffect(() => {
         // Проверяем токен при загрузке
@@ -40,17 +42,7 @@ const AppLayout = () => {
             return;
         }
 
-        // Декодируем токен и устанавливаем имя пользователя
-        try {
-            const base64Payload = token.split('.')[1];
-            const payload = JSON.parse(atob(base64Payload));
-            if (payload && payload.name) {
-                setUserName(payload.name);
-            }
-        } catch (e: unknown) {
-            console.error('Error decoding token:', e);
-            // Если не удалось декодировать, оставляем "Пользователь"
-        }
+        // Имя пользователя будет загружено через API запрос
 
         // Загружаем данные
         loadMockData();
